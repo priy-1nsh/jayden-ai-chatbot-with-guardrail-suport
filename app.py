@@ -1,5 +1,6 @@
 import streamlit as st
 import re
+import os
 import google.generativeai as genai
 import time
 from datetime import datetime
@@ -122,7 +123,21 @@ if "guardrail_triggers" not in st.session_state:
 # Configure Gemini API
 @st.cache_resource
 def configure_gemini():
-    genai.configure(api_key="REDACTED_API_KEY")
+    # Read the Gemini key from the environment or .streamlit/secrets.toml --
+    # never hardcode it in source.
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        try:
+            api_key = st.secrets["GEMINI_API_KEY"]
+        except Exception:
+            api_key = None
+    if not api_key:
+        st.error(
+            "Missing GEMINI_API_KEY. Add it to .streamlit/secrets.toml or set "
+            "the GEMINI_API_KEY environment variable."
+        )
+        st.stop()
+    genai.configure(api_key=api_key)
     return genai.GenerativeModel("gemini-1.5-flash")
 
 model = configure_gemini()
