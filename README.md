@@ -115,9 +115,6 @@ create `.streamlit/secrets.toml`:
 GEMINI_API_KEY = "your-api-key-here"
 ```
 
-> **Security note:** never commit your API key. Keep it in `secrets.toml` (which
-> should be git-ignored) or an environment variable — not inline in the source.
-
 ### 3. Run
 
 ```bash
